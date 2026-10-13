@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>🩸 ESCAPE THE HORROR 🩸</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+  
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Eater&family=Metal+Mania&display=swap');
+  
+  body {
+    font-family: 'Georgia', serif;
+    background: #000;
+    color: #8a8a8a;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text y="24" font-size="24">🔪</text></svg>'), auto;
+  }
+  
+  /* Fondo ultra oscuro con sangre */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(circle at 30% 40%, rgba(80, 0, 0, 0.4) 0%, transparent 40%),
+      radial-gradient(circle at 70% 60%, rgba(50, 0, 0, 0.3) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(20, 0, 0, 0.9) 0%, #000 100%);
+    z-index: -2;
+    animation: bgPulse 10s ease-in-out infinite;
+  }
+  
+  @keyframes bgPulse {
+    0%, 100% { opacity: 1; filter: brightness(1); }
+    50% { opacity: 0.8; filter: brightness(0.7); }
+  }
+  
+  /* Textura de sangre seca */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(50, 0, 0, 0.03) 2px, rgba(50, 0, 0, 0.03) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(50, 0, 0, 0.03) 2px, rgba(50, 0, 0, 0.03) 4px);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  
+  .fog {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="f"><feTurbulence baseFrequency="0.02" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(%23f)" opacity="0.3"/></svg>');
+    opacity: 0.2;
+    z-index: -1;
+    animation: fogMove 40s linear infinite;
+    pointer-events: none;
+    filter: sepia(1) hue-rotate(-30deg) saturate(3);
+  }
+  
+  @keyframes fogMove {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(-150px) translateY(-75px); }
+  }
+  
+  .game-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 100vh;
+    position: relative;
+  }
+  
+  .screen {
+    display: none;
+    animation: fadeIn 1.5s ease-in;
+  }
+  
+  .screen.active {
+    display: block;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+    to { opacity: 1; transform: scale(1); filter: blur(0); }
+  }
+  
+  /* Título principal más siniestro */
+  .main-title {
+    font-family: 'Nosifer', cursive;
+    font-size: 4.5rem;
+    text-align: center;
+    color: #8b0000;
+    text-shadow: 
+      0 0 10px #ff0000,
+      0 0 20px #8b0000,
+      0 0 40px #500000,
+      0 0 80px #300000,
+      4px 4px 0 #000,
+      -2px -2px 0 #000;
+    margin: 40px 0;
+    animation: titleGlitch 4s infinite;
+    letter-spacing: 5px;
+    position: relative;
+  }
+  
+  @keyframes titleGlitch {
+    0%, 100% { 
+      opacity: 1; 
+      transform: translate(0);
+      text-shadow: 0 0 10px #ff0000, 0 0 20px #8b0000, 0 0 40px #500000, 4px 4px 0 #000;
+    }
+    2% { 
+      transform: translate(-2px, 2px);
+      text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
+    }
+    4% { 
+      transform: translate(2px, -2px);
+      text-shadow: -2px 0 #ff0000, 2px 0 #0000ff;
+    }
+    6% { 
+      opacity: 0.3;
+      transform: translate(0);
+    }
+    8% { 
+      opacity: 1;
+    }
+    45% { opacity: 1; }
+    50% { opacity: 0.2; transform: skewX(5deg); }
+    55% { opacity: 1; transform: skewX(0); }
+  }
+  
+  .subtitle {
+    font-family: 'Metal Mania', cursive;
+    font-size: 2rem;
+    text-align: center;
+    color: #5a0000;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px #000, 0 0 10px #8b0000;
+    letter-spacing: 3px;
+  }
+  
+  .intro-text {
+    background: rgba(10, 0, 0, 0.95);
+    border: 2px solid #500000;
+    border-radius: 5px;
+    padding: 30px;
+    margin: 30px 0;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    box-shadow: 
+      0 0 30px rgba(80, 0, 0, 0.6),
+      inset 0 0 30px rgba(0,0,0,0.9),
+      inset 0 0 60px rgba(50, 0, 0, 0.3);
+    position: relative;
+    color: #6a6a6a;
+  }
+  
+  .intro-text::before {
+    content: '🕯️';
+    position: absolute;
+    top: -25px;
+    left: 20px;
+    font-size: 3rem;
+    animation: candleFlicker 1s infinite;
+    filter: brightness(0.7);
+  }
+  
+  .intro-text::after {
+    content: '🕯️';
+    position: absolute;
+    top: -25px;
+    right: 20px;
+    font-size: 3rem;
+    animation: candleFlicker 1s infinite 0.3s;
+    filter: brightness(0.7);
+  }
+  
+  @keyframes candleFlicker {
+    0%, 100% { transform: scale(1); filter: brightness(0.7); }
+    25% { transform: scale(1.1) rotate(-5deg); filter: brightness(0.9); }
+    50% { transform: scale(0.9) rotate(5deg); filter: brightness(0.5); }
+    75% { transform: scale(1.05) rotate(-3deg); filter: brightness(0.8); }
+  }
+  
+  /* Botones más siniestros */
+  .btn {
+    font-family: 'Metal Mania', cursive;
+    font-size: 1.6rem;
+    padding: 18px 45px;
+    background: linear-gradient(135deg, #3a0000, #1a0000);
+    color: #8b0000;
+    border: 2px solid #500000;
+    border-radius: 3px;
+    cursor: pointer;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    box-shadow: 
+      0 0 20px rgba(80, 0, 0, 0.5),
+      inset 0 0 15px rgba(0,0,0,0.8);
+    display: block;
+    margin: 20px auto;
+    text-shadow: 0 0 5px #8b0000;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(139, 0, 0, 0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  .btn:hover::before {
+    left: 100%;
+  }
+  
+  .btn:hover {
+    background: linear-gradient(135deg, #5a0000, #2a0000);
+    box-shadow: 
+      0 0 40px rgba(139, 0, 0, 0.8),
+      inset 0 0 20px rgba(0,0,0,0.9);
+    transform: scale(1.05);
+    color: #ff0000;
+    border-color: #8b0000;
+  }
+  
+  /* Habitación más oscura */
+  .room {
+    background: rgba(5, 0, 0, 0.98);
+    border: 3px solid #3a0000;
+    border-radius: 5px;
+    padding: 40px;
+    margin: 20px 0;
+    box-shadow: 
+      0 0 60px rgba(50, 0, 0, 0.7),
+      inset 0 0 40px rgba(0,0,0,0.95),
+      inset 0 0 80px rgba(30, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .room::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(30, 0, 0, 0.05) 3px, rgba(30, 0, 0, 0.05) 6px);
+    pointer-events: none;
+    opacity: 0.3;
+  }
+  
+  .room-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #3a0000;
+    padding-bottom: 20px;
+    position: relative;
+  }
+  
+  .room-header::after {
+    content: '🩸';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+    animation: bloodDrip 2s infinite;
+  }
+  
+  @keyframes bloodDrip {
+    0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+    50% { transform: translateX(-50%) translateY(10px); opacity: 0.5; }
+  }
+  
+  .room-title {
+    font-family: 'Eater', cursive;
+    font-size: 2.8rem;
+    color: #5a0000;
+    text-shadow: 
+      0 0 15px #8b0000,
+      0 0 30px #500000,
+      3px 3px 0 #000;
+    margin-bottom: 10px;
+    letter-spacing: 4px;
+  }
+  
+  .room-level {
+    font-family: 'Metal Mania', cursive;
+    color: #4a0000;
+    font-size: 1.4rem;
+    letter-spacing: 5px;
+    text-shadow: 0 0 10px #500000;
+  }
+  
+  .question-box {
+    background: rgba(15, 0, 0, 0.9);
+    border-left: 5px solid #5a0000;
+    padding: 25px;
+    margin: 20px 0;
+    border-radius: 3px;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+  }
+  
+  .question-text { 
+    color: #7a7a7a; 
+    margin-bottom: 10px;
+  }
+  
+  .question-text-en { 
+    color: #5a0000; 
+    font-style: italic; 
+    margin-bottom: 15px;
+    text-shadow: 0 0 5px #3a0000;
+  }
+  
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 25px 0;
+  }
+  
+  .option {
+    background: linear-gradient(135deg, #0a0000, #1a0000);
+    border: 2px solid #3a0000;
+    color: #6a6a6a;
+    padding: 18px 25px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.3s;
+    text-align: left;
+    font-family: inherit;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+  }
+  
+  .option:hover {
+    background: linear-gradient(135deg, #2a0000, #3a0000);
+    border-color: #5a0000;
+    transform: translateX(10px);
+    box-shadow: 
+      0 0 20px rgba(80, 0, 0, 0.6),
+      inset 0 0 15px rgba(0,0,0,0.9);
+    color: #8b0000;
+  }
+  
+  .option.correct {
+    background: linear-gradient(135deg, #001a00, #003300) !important;
+    border-color: #005500 !important;
+    color: #00aa00 !important;
+    animation: correctPulse 0.6s;
+    box-shadow: 0 0 30px rgba(0, 100, 0, 0.5);
+  }
+  
+  .option.wrong {
+    background: linear-gradient(135deg, #2a0000, #4a0000) !important;
+    border-color: #8b0000 !important;
+    color: #ff0000 !important;
+    animation: wrongShake 0.5s;
+    box-shadow: 0 0 30px rgba(139, 0, 0, 0.8);
+  }
+  
+  @keyframes correctPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-15px) rotate(-2deg); }
+    75% { transform: translateX(15px) rotate(2deg); }
+  }
+  
+  .feedback {
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 3px;
+    font-size: 1.1rem;
+    display: none;
+  }
+  
+  .feedback.success {
+    background: rgba(0, 30, 0, 0.4);
+    border: 2px solid #005500;
+    color: #00aa00;
+    display: block;
+    animation: fadeIn 0.5s;
+    box-shadow: 0 0 20px rgba(0, 100, 0, 0.3);
+  }
+  
+  .feedback.error {
+    background: rgba(50, 0, 0, 0.5);
+    border: 2px solid #8b0000;
+    color: #ff0000;
+    display: block;
+    animation: fadeIn 0.5s;
+    box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+  }
+  
+  .hint-box {
+    background: rgba(50, 0, 0, 0.2);
+    border: 2px dashed #5a0000;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 3px;
+    color: #5a0000;
+    font-style: italic;
+    text-align: center;
+    display: none;
+  }
+  
+  .hint-box.show { 
+    display: block; 
+    animation: fadeIn 0.5s;
+    text-shadow: 0 0 5px #3a0000;
+  }
+  
+  /* Decoraciones más siniestras */
+  .deco {
+    position: fixed;
+    font-size: 3.5rem;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: 1;
+    animation: float 5s ease-in-out infinite;
+    filter: grayscale(0.5) brightness(0.6);
+  }
+  
+  .deco-1 { top: 10%; left: 5%; }
+  .deco-2 { top: 30%; right: 5%; animation-delay: 1.5s; }
+  .deco-3 { bottom: 20%; left: 8%; animation-delay: 2.5s; }
+  .deco-4 { bottom: 10%; right: 8%; animation-delay: 3.5s; }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+    50% { transform: translateY(-25px) rotate(15deg); opacity: 0.3; }
+  }
+  
+  /* Sangre más intensa */
+  .blood-drip {
+    position: fixed;
+    top: 0;
+    width: 10px;
+    height: 0;
+    background: linear-gradient(to bottom, #500000, #8b0000, #ff0000);
+    border-radius: 0 0 50% 50%;
+    animation: drip 6s infinite;
+    z-index: 2;
+    pointer-events: none;
+    box-shadow: 0 0 10px #8b0000;
+  }
+  
+  .blood-drip:nth-child(1) { left: 15%; }
+  .blood-drip:nth-child(2) { left: 45%; animation-delay: 2s; }
+  .blood-drip:nth-child(3) { left: 75%; animation-delay: 4s; }
+  
+  @keyframes drip {
+    0% { height: 0; opacity: 1; }
+    70% { height: 150px; opacity: 1; }
+    100% { height: 150px; opacity: 0; }
+  }
+  
+  /* JUMP SCARE más terrorífico */
+  .jumpscare-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.98);
+    z-index: 99999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .jumpscare-overlay.active {
+    display: flex;
+    animation: scareFlash 0.15s;
+  }
+  
+  @keyframes scareFlash {
+    0%, 100% { background: rgba(0, 0, 0, 0.98); }
+    25% { background: rgba(139, 0, 0, 0.9); }
+    50% { background: rgba(0, 0, 0, 0.98); }
+    75% { background: rgba(80, 0, 0, 0.95); }
+  }
+  
+  .monster {
+    font-size: 22rem;
+    animation: monsterAttack 0.6s ease-out;
+    filter: drop-shadow(0 0 60px #8b0000) brightness(0.8) contrast(1.3);
+  }
+  
+  @keyframes monsterAttack {
+    0% { 
+      transform: scale(0) rotate(-360deg); 
+      opacity: 0;
+      filter: blur(20px);
+    }
+    50% {
+      transform: scale(1.8) rotate(15deg);
+      filter: blur(0) brightness(2);
+    }
+    100% { 
+      transform: scale(1) rotate(0deg); 
+      opacity: 1;
+      filter: drop-shadow(0 0 60px #8b0000) brightness(0.8);
+    }
+  }
+  
+  .scare-text {
+    font-family: 'Nosifer', cursive;
+    font-size: 3.5rem;
+    color: #8b0000;
+    text-shadow: 
+      0 0 30px #ff0000,
+      0 0 60px #8b0000,
+      0 0 90px #500000,
+      4px 4px 0 #000;
+    margin-top: 30px;
+    animation: textGlitch 0.4s infinite;
+    text-align: center;
+    letter-spacing: 5px;
+  }
+  
+  @keyframes textGlitch {
+    0%, 100% { 
+      transform: scale(1); 
+      opacity: 1;
+      text-shadow: 0 0 30px #ff0000, 0 0 60px #8b0000, 4px 4px 0 #000;
+    }
+    25% { 
+      transform: scale(1.1) skewX(5deg);
+      text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
+    }
+    50% { 
+      transform: scale(0.95) skewX(-5deg);
+      text-shadow: -2px 0 #ff0000, 2px 0 #0000ff;
+    }
+    75% { 
+      transform: scale(1.05);
+      opacity: 0.7;
+    }
+  }
+  
+  .scare-subtitle {
+    font-family: 'Metal Mania', cursive;
+    font-size: 1.6rem;
+    color: #5a0000;
+    margin-top: 20px;
+    text-shadow: 0 0 10px #3a0000;
+    letter-spacing: 3px;
+  }
+  
+  .screen-shake { animation: shake 0.6s; }
+  
+  @keyframes shake {
+    0%, 100% { transform: translate(0, 0) rotate(0); }
+    10% { transform: translate(-15px, -8px) rotate(-1deg); }
+    20% { transform: translate(15px, 8px) rotate(1deg); }
+    30% { transform: translate(-15px, 8px) rotate(-1deg); }
+    40% { transform: translate(15px, -8px) rotate(1deg); }
+    50% { transform: translate(-8px, 15px) rotate(-0.5deg); }
+    60% { transform: translate(8px, -15px) rotate(0.5deg); }
+    70% { transform: translate(-8px, -8px) rotate(-0.5deg); }
+    80% { transform: translate(8px, 8px) rotate(0.5deg); }
+    90% { transform: translate(-8px, 8px) rotate(-0.5deg); }
+  }
+  
+  .screen-flash { animation: screenFlash 0.6s; }
+  
+  @keyframes screenFlash {
+    0%, 100% { filter: none; }
+    25% { filter: invert(1) brightness(3) hue-rotate(180deg); }
+    50% { filter: invert(0) brightness(0.3); }
+    75% { filter: invert(1) brightness(2); }
+  }
+  
+  /* ============ MINI JUEGOS - ESTÉTICA OSCURA ============ */
+  .minigame-container {
+    background: rgba(5, 0, 0, 0.98);
+    border: 3px solid #3a0000;
+    border-radius: 5px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 
+      0 0 60px rgba(50, 0, 0, 0.7),
+      inset 0 0 40px rgba(0,0,0,0.95);
+    text-align: center;
+  }
+  
+  .minigame-title {
+    font-family: 'Eater', cursive;
+    font-size: 2.2rem;
+    color: #5a0000;
+    text-shadow: 
+      0 0 15px #8b0000,
+      0 0 30px #500000,
+      3px 3px 0 #000;
+    margin-bottom: 10px;
+    letter-spacing: 4px;
+  }
+  
+  .minigame-desc {
+    color: #4a0000;
+    font-style: italic;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    text-shadow: 0 0 5px #3a0000;
+  }
+  
+  #mazeCanvas {
+    border: 3px solid #3a0000;
+    border-radius: 3px;
+    background: #050000;
+    box-shadow: 
+      0 0 40px rgba(80, 0, 0, 0.6),
+      inset 0 0 60px rgba(0,0,0,0.9);
+    max-width: 100%;
+    touch-action: none;
+    cursor: grab;
+  }
+  
+  #mazeCanvas:active { cursor: grabbing; }
+  
+  /* Cables más oscuros */
+  #cablesGame {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 400px;
+    margin: 20px auto;
+    background: rgba(10, 0, 0, 0.95);
+    border: 3px solid #3a0000;
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.9);
+  }
+  
+  #cablesSvg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .cable-point {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    border: 3px solid #000;
+    transition: all 0.3s;
+    z-index: 2;
+    box-shadow: 
+      0 0 20px currentColor,
+      inset 0 0 10px rgba(0,0,0,0.8);
+  }
+  
+  .cable-point:hover {
+    transform: scale(1.3);
+    box-shadow: 
+      0 0 35px currentColor,
+      0 0 60px currentColor,
+      inset 0 0 15px rgba(0,0,0,0.9);
+  }
+  
+  .cable-point.selected {
+    animation: pointPulse 0.6s infinite;
+    transform: scale(1.4);
+  }
+  
+  .cable-point.connected {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  @keyframes pointPulse {
+    0%, 100% { 
+      box-shadow: 0 0 20px currentColor, inset 0 0 10px rgba(0,0,0,0.8);
+      filter: brightness(1);
+    }
+    50% { 
+      box-shadow: 0 0 50px currentColor, 0 0 80px currentColor, inset 0 0 20px rgba(0,0,0,0.9);
+      filter: brightness(1.5);
+    }
+  }
+  
+  /* Puertas más siniestras */
+  .doors-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin: 30px 0;
+  }
+  
+  .door {
+    width: 120px;
+    height: 200px;
+    background: linear-gradient(135deg, #1a0d00, #0a0500);
+    border: 4px solid #3a1f00;
+    border-radius: 5px 5px 0 0;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 
+      0 10px 25px rgba(0,0,0,0.9),
+      inset 0 0 30px rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    filter: brightness(0.7);
+  }
+  
+  .door:hover {
+    transform: translateY(-15px) scale(1.08);
+    box-shadow: 
+      0 25px 40px rgba(80, 0, 0, 0.6),
+      inset 0 0 40px rgba(0,0,0,0.9);
+    filter: brightness(0.9);
+  }
+  
+  .door::before {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    background: #8b4513;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #8b4513;
+  }
+  
+  .door.wrong-door {
+    animation: doorShake 0.5s;
+  }
+  
+  @keyframes doorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-15px) rotate(-3deg); }
+    75% { transform: translateX(15px) rotate(3deg); }
+  }
+  
+  .door.correct-door {
+    animation: doorOpen 1s forwards;
+  }
+  
+  @keyframes doorOpen {
+    0% { transform: perspective(500px) rotateY(0); }
+    100% { 
+      transform: perspective(500px) rotateY(-90deg); 
+      background: #000;
+      box-shadow: 0 0 60px rgba(139, 0, 0, 0.8);
+    }
+  }
+  
+  /* Monstruos más terroríficos */
+  #monstersGame {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: rgba(5, 0, 0, 0.98);
+    border: 3px solid #3a0000;
+    border-radius: 3px;
+    margin: 20px 0;
+    overflow: hidden;
+    box-shadow: 
+      inset 0 0 60px rgba(0,0,0,0.95),
+      inset 0 0 100px rgba(30, 0, 0, 0.4);
+  }
+  
+  .monster-target {
+    position: absolute;
+    font-size: 3.5rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    animation: monsterFloat 2.5s ease-in-out infinite;
+    filter: 
+      drop-shadow(0 0 15px #8b0000)
+      brightness(0.7)
+      contrast(1.2);
+  }
+  
+  .monster-target:hover {
+    transform: scale(1.4);
+    filter: 
+      drop-shadow(0 0 30px #ff0000)
+      brightness(1)
+      contrast(1.5);
+  }
+  
+  @keyframes monsterFloat {
+    0%, 100% { 
+      transform: translateY(0) rotate(0deg);
+      filter: drop-shadow(0 0 15px #8b0000) brightness(0.7) contrast(1.2);
+    }
+    50% { 
+      transform: translateY(-20px) rotate(8deg);
+      filter: drop-shadow(0 0 25px #8b0000) brightness(0.9) contrast(1.3);
+    }
+  }
+  
+  .monster-target.destroyed {
+    animation: monsterExplode 0.6s forwards;
+    pointer-events: none;
+  }
+  
+  @keyframes monsterExplode {
+    0% { 
+      transform: scale(1); 
+      opacity: 1;
+      filter: brightness(1);
+    }
+    30% { 
+      transform: scale(2.5); 
+      opacity: 0.8;
+      filter: brightness(3) contrast(2);
+    }
+    60% {
+      transform: scale(3);
+      opacity: 0.4;
+      filter: brightness(5) blur(5px);
+    }
+    100% { 
+      transform: scale(0); 
+      opacity: 0;
+      filter: brightness(0) blur(10px);
+    }
+  }
+  
+  .monster-counter {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(50, 0, 0, 0.9);
+    padding: 12px 25px;
+    border-radius: 3px;
+    color: #8b0000;
+    font-family: 'Metal Mania', cursive;
+    font-size: 1.4rem;
+    border: 2px solid #5a0000;
+    z-index: 10;
+    text-shadow: 0 0 10px #8b0000;
+    box-shadow: 0 0 20px rgba(80, 0, 0, 0.6);
+  }
+  
+  /* Transición más dramática */
+  .transition-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #000;
+    z-index: 99998;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .transition-overlay.active {
+    display: flex;
+    animation: fadeIn 0.5s;
+  }
+  
+  .transition-door {
+    width: 220px;
+    height: 380px;
+    background: linear-gradient(135deg, #1a0d00, #0a0500);
+    border: 5px solid #3a1f00;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+    box-shadow: 
+      0 0 60px rgba(80, 0, 0, 0.6),
+      inset 0 0 40px rgba(0,0,0,0.9);
+    overflow: hidden;
+  }
+  
+  .transition-door-inner {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2a1d10, #1a0d00);
+    transform-origin: left center;
+    animation: doorOpenTransition 2.5s forwards;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  @keyframes doorOpenTransition {
+    0% { 
+      transform: perspective(800px) rotateY(0);
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.9);
+    }
+    100% { 
+      transform: perspective(800px) rotateY(-85deg);
+      box-shadow: inset 0 0 80px rgba(139, 0, 0, 0.5);
+    }
+  }
+  
+  .transition-door::before {
+    content: '';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    width: 15px;
+    height: 15px;
+    background: #8b4513;
+    border-radius: 50%;
+    box-shadow: 0 0 20px #8b4513;
+    z-index: 2;
+  }
+  
+  .silhouette {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 6rem;
+    animation: runToDoor 2.5s forwards;
+    z-index: 1;
+    filter: 
+      drop-shadow(0 0 30px #8b0000)
+      brightness(0.5);
+  }
+  
+  @keyframes runToDoor {
+    0% { 
+      bottom: -150px; 
+      opacity: 0; 
+      transform: translateX(-50%) scale(0.3);
+      filter: drop-shadow(0 0 10px #8b0000) brightness(0.3);
+    }
+    30% { 
+      opacity: 1;
+      filter: drop-shadow(0 0 20px #8b0000) brightness(0.5);
+    }
+    70% { 
+      bottom: 50px; 
+      transform: translateX(-50%) scale(1);
+      filter: drop-shadow(0 0 30px #8b0000) brightness(0.7);
+    }
+    100% { 
+      bottom: 50px; 
+      transform: translateX(-50%) scale(0.2); 
+      opacity: 0;
+      filter: drop-shadow(0 0 50px #8b0000) brightness(1);
+    }
+  }
+  
+  .transition-text {
+    font-family: 'Metal Mania', cursive;
+    font-size: 2.2rem;
+    color: #5a0000;
+    text-shadow: 
+      0 0 20px #8b0000,
+      0 0 40px #500000,
+      3px 3px 0 #000;
+    margin-top: 40px;
+    animation: textPulse 1.5s infinite;
+    letter-spacing: 4px;
+  }
+  
+  @keyframes textPulse {
+    0%, 100% { 
+      transform: scale(1); 
+      opacity: 1;
+      text-shadow: 0 0 20px #8b0000, 0 0 40px #500000, 3px 3px 0 #000;
+    }
+    50% { 
+      transform: scale(1.05); 
+      opacity: 0.8;
+      text-shadow: 0 0 30px #8b0000, 0 0 60px #500000, 3px 3px 0 #000;
+    }
+  }
+  
+  /* Victoria más dramática */
+  .victory-screen { text-align: center; padding: 40px; }
+  
+  .victory-title {
+    font-family: 'Nosifer', cursive;
+    font-size: 4.5rem;
+    color: #5a0000;
+    text-shadow: 
+      0 0 20px #8b0000,
+      0 0 40px #500000,
+      0 0 80px #300000,
+      4px 4px 0 #000;
+    margin: 30px 0;
+    animation: victoryPulse 2.5s infinite;
+    letter-spacing: 5px;
+  }
+  
+  @keyframes victoryPulse {
+    0%, 100% { 
+      transform: scale(1);
+      text-shadow: 0 0 20px #8b0000, 0 0 40px #500000, 4px 4px 0 #000;
+    }
+    50% { 
+      transform: scale(1.1);
+      text-shadow: 0 0 40px #8b0000, 0 0 80px #500000, 4px 4px 0 #000;
+    }
+  }
+  
+  .trophy {
+    font-size: 9rem;
+    margin: 20px 0;
+    animation: rotate 4s linear infinite;
+    filter: 
+      drop-shadow(0 0 30px #8b0000)
+      brightness(0.8);
+  }
+  
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Efectos de parpadeo más frecuentes */
+  @keyframes randomFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  
+  @media (max-width: 600px) {
+    .main-title { font-size: 2.8rem; }
+    .room-title { font-size: 2rem; }
+    .room { padding: 20px; }
+    .monster { font-size: 14rem; }
+    .scare-text { font-size: 2.2rem; }
+    .door { width: 90px; height: 150px; font-size: 2.2rem; }
+    .transition-door { width: 160px; height: 280px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="fog"></div>
+<div class="blood-drip"></div>
+<div class="blood-drip"></div>
+<div class="blood-drip"></div>
+
+<div class="deco deco-1">💀</div>
+<div class="deco deco-2">☠️</div>
+<div class="deco deco-3">🩸</div>
+<div class="deco deco-4">👁️</div>
+
+<!-- JUMP SCARE -->
+<div class="jumpscare-overlay" id="jumpscareOverlay">
+  <div class="monster" id="monsterEmoji">👹</div>
+  <div class="scare-text" id="scareText">YOU FAILED!</div>
+  <div class="scare-subtitle">The darkness consumes you...</div>
+</div>
+
+<!-- TRANSICIÓN -->
+<div class="transition-overlay" id="transitionOverlay">
+  <div class="transition-door">
+    <div class="transition-door-inner"></div>
+  </div>
+  <div class="silhouette">🏃</div>
+  <div class="transition-text" id="transitionText">Running to the next room...</div>
+</div>
+
+<div class="game-container">
+
+  <!-- INICIO -->
+  <div class="screen active" id="startScreen">
+    <h1 class="main-title">ESCAPE THE HORROR</h1>
+    <h2 class="subtitle">🩸 No hay salida... o quizás sí 🩸</h2>
+    
+    <div class="intro-text">
+      <p style="text-align:center; font-size: 1.4rem; color: #8b0000; margin-bottom: 20px; text-shadow: 0 0 10px #500000;">
+        ⚠️ <strong>ADVERTENCIA</strong> ⚠️
+      </p>
+      <p>Has despertado en una mansión maldita... Las paredes respiran. El suelo está cubierto de sangre seca.</p>
+      <br>
+      <p>Para escapar, deberás resolver <strong style="color:#5a0000;">4 acertijos en inglés</strong> y sobrevivir a <strong style="color:#5a0000;">4 pruebas mortales</strong>.</p>
+      <br>
+      <p style="color:#8b0000; text-shadow: 0 0 5px #500000;">🩸 <strong>RECUERDA:</strong> Fallar una pregunta = <strong>MUERTE INSTANTÁNEA</strong></p>
+      <p style="color:#5a0000;">🎮 Los mini juegos puedes reintentarlos... si vives lo suficiente</p>
+      <br>
+      <p style="text-align:center; color:#8b0000; font-style:italic; text-shadow: 0 0 10px #500000;">
+        "They're watching you... always watching..."
+      </p>
+    </div>
+    
+    <button class="btn" onclick="startGame()">🔪 Enter If You Dare 🔪</button>
+  </div>
+
+  <!-- HABITACIÓN 1 -->
+  <div class="screen" id="room1">
+    <div class="room">
+      <div class="room-header">
+        <h2 class="room-title">🚪 ROOM 1</h2>
+        <p class="room-level">— THE BEGINNING OF YOUR NIGHTMARE —</p>
+      </div>
+      <div class="question-box">
+        <p class="question-text-en">"What is the correct structure to talk about a future condition using IF?"</p>
+        <p class="question-text">¿Cuál es la estructura correcta para hablar de una condición futura usando IF?</p>
+      </div>
+      <div class="options">
+        <button class="option" onclick="checkAnswer(1, 'A')">A. If + will + verb, will + verb</button>
+        <button class="option" onclick="checkAnswer(1, 'B')">B. If + present simple, will + verb</button>
+        <button class="option" onclick="checkAnswer(1, 'C')">C. If + verb-ing, verb-ed</button>
+      </div>
+      <div class="feedback" id="feedback1"></div>
+      <div class="hint-box" id="hint1">🗝️ "Correct... but the real horror begins now..."</div>
+      <button class="btn" id="next1" style="display:none;" onclick="startMinigame(1)">🎮 Face Your Fear</button>
+    </div>
+  </div>
+
+  <!-- MINI JUEGO 1 -->
+  <div class="screen" id="minigame1">
+    <div class="minigame-container">
+      <h2 class="minigame-title">🌀 MAZE OF THE DAMNED</h2>
+      <p class="minigame-desc">Drag the soul through the corridors of hell... if you can</p>
+      <canvas id="mazeCanvas" width="400" height="400"></canvas>
+      <p style="color:#5a0000; margin-top:15px; font-style:italic;">The exit awaits... but so do they</p>
+    </div>
+  </div>
+
+  <!-- HABITACIÓN 2 -->
+  <div class="screen" id="room2">
+    <div class="room">
+      <div class="room-header">
+        <h2 class="room-title">🚪 ROOM 2</h2>
+        <p class="room-level">— THE DARKNESS GROWS —</p>
+      </div>
+      <div class="question-box">
+        <p class="question-text-en">"Complete the sentence: I study ___ learn English."</p>
+        <p class="question-text">Completa la oración: "Estudio para aprender inglés"</p>
+      </div>
+      <div class="options">
+        <button class="option" onclick="checkAnswer(2, 'A')">A. for</button>
+        <button class="option" onclick="checkAnswer(2, 'B')">B. when</button>
+        <button class="option" onclick="checkAnswer(2, 'C')">C. to</button>
+      </div>
+      <div class="feedback" id="feedback2"></div>
+      <div class="hint-box" id="hint2">🗝️ "You survive... for now. Connect the cursed wires..."</div>
+      <button class="btn" id="next2" style="display:none;" onclick="startMinigame(2)">🎮 Face Your Fear</button>
+    </div>
+  </div>
+
+  <!-- MINI JUEGO 2 -->
+  <div class="screen" id="minigame2">
+    <div class="minigame-container">
+      <h2 class="minigame-title">⚡ WIRES OF TORMENT</h2>
+      <p class="minigame-desc">Connect the cables before the power surges...</p>
+      <div id="cablesGame">
+        <svg id="cablesSvg"></svg>
+      </div>
+      <p style="color:#5a0000; margin-top:15px; font-style:italic;">One wrong connection could be your last</p>
+    </div>
+  </div>
+
+  <!-- HABITACIÓN 3 -->
+  <div class="screen" id="room3">
+    <div class="room">
+      <div class="room-header">
+        <h2 class="room-title">🚪 ROOM 3</h2>
+        <p class="room-level">— NO TURNING BACK —</p>
+      </div>
+      <div class="question-box">
+        <p class="question-text-en">"Find and correct the mistake: If you want learn English, practice every day."</p>
+        <p class="question-text">Encuentra y corrige el error. ¿Qué palabra hace falta?</p>
+      </div>
+      <div class="options">
+        <button class="option" onclick="checkAnswer(3, 'A')">A. For</button>
+        <button class="option" onclick="checkAnswer(3, 'B')">B. To</button>
+        <button class="option" onclick="checkAnswer(3, 'C')">C. When</button>
+      </div>
+      <div class="feedback" id="feedback3"></div>
+      <div class="hint-box" id="hint3">🗝️ "Impressive... but can you choose the right door?"</div>
+      <button class="btn" id="next3" style="display:none;" onclick="startMinigame(3)">🎮 Face Your Fear</button>
+    </div>
+  </div>
+
+  <!-- MINI JUEGO 3 -->
+  <div class="screen" id="minigame3">
+    <div class="minigame-container">
+      <h2 class="minigame-title">🚪 FIVE DOORS TO HELL</h2>
+      <p class="minigame-desc">Only one leads to salvation. The others... you don't want to know</p>
+      <div class="doors-container" id="doorsContainer"></div>
+      <p style="color:#5a0000; margin-top:15px; font-style:italic;">Choose wisely. They're all watching</p>
+    </div>
+  </div>
+
+  <!-- HABITACIÓN 4 -->
+  <div class="screen" id="room4">
+    <div class="room">
+      <div class="room-header">
+        <h2 class="room-title">🚪 ROOM 4</h2>
+        <p class="room-level">— FINAL DESCENT INTO MADNESS —</p>
+      </div>
+      <div class="question-box">
+        <p class="question-text-en">"Which sentence is INCORRECT?"</p>
+        <p class="question-text">¿Cuál de las siguientes oraciones es incorrecta?</p>
+      </div>
+      <div class="options">
+        <button class="option" onclick="checkAnswer(4, 'A')">A. When you arrive, call me.</button>
+        <button class="option" onclick="checkAnswer(4, 'B')">B. This gift is for you.</button>
+        <button class="option" onclick="checkAnswer(4, 'C')">C. I study for learn English.</button>
+      </div>
+      <div class="feedback" id="feedback4"></div>
+      <div class="hint-box" id="hint4">🗝️ "Almost free... now destroy them all!"</div>
+      <button class="btn" id="next4" style="display:none;" onclick="startMinigame(4)">🎮 Final Confrontation</button>
+    </div>
+  </div>
+
+  <!-- MINI JUEGO 4 -->
+  <div class="screen" id="minigame4">
+    <div class="minigame-container">
+      <h2 class="minigame-title">💀 SLAY THE NIGHTMARES</h2>
+      <p class="minigame-desc">They're everywhere. Destroy them before they destroy you</p>
+      <div id="monstersGame">
+        <div class="monster-counter">Souls Remaining: <span id="monsterCount">0</span></div>
+      </div>
+      <button class="btn" id="escapeBtn" style="display:none;" onclick="showVictory()">🏆 ESCAPE THIS HELL</button>
+    </div>
+  </div>
+
+  <!-- VICTORIA -->
+  <div class="screen" id="victoryScreen">
+    <div class="victory-screen">
+      <div class="trophy">🏆</div>
+      <h1 class="victory-title">YOU SURVIVED</h1>
+      <h2 class="subtitle">🩸 But at what cost? 🩸</h2>
+      
+      <div class="intro-text">
+        <p style="text-align:center; font-size: 1.4rem; color: #00aa00; margin-bottom: 20px; text-shadow: 0 0 10px #005500;">
+          ✨ YOU ESCAPED ✨
+        </p>
+        <p>Has sobrevivido a la mansión maldita. Pero las pesadillas... las pesadillas nunca terminan realmente.</p>
+        <br>
+        <p style="color:#5a0000;"><strong>Lo que aprendiste en tu camino a la libertad:</strong></p>
+        <ul style="margin: 15px 0 15px 30px; line-height: 2;">
+          <li><strong>IF + present simple, will + verb</strong> → condiciones futuras</li>
+          <li><strong>TO + verb</strong> → expresar propósito</li>
+          <li><strong>NUNCA</strong> "for + verb" para propósito</li>
+        </ul>
+        <p style="text-align:center; color:#8b0000; font-style:italic; margin-top: 20px; text-shadow: 0 0 10px #500000;">
+          "You're free... for now. We'll be waiting..."
+        </p>
+      </div>
+      
+      <button class="btn" onclick="restartGame()">🔪 Dare to Return? 🔪</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ============ CONFIGURACIÓN ============
+  const correctAnswers = { 1: 'B', 2: 'C', 3: 'B', 4: 'C' };
+  
+  const explanations = {
+    1: "✅ Correct. IF + present simple, will + verb. The path is clear... for now.",
+    2: "✅ Excellent. 'to + verb' for purpose. You understand... but do they?",
+    3: "✅ Correct. Missing 'to'. Knowledge is power... but is it enough?",
+    4: "✅ Correct. C is wrong. Should be: 'I study TO learn English.' You're almost free..."
+  };
+  
+  const monsters = ['👹', '👺', '💀', '☠️', '👻', '🧟', '🧛', '👿', '🩸'];
+  const scareMessages = [
+    'YOU FAILED!', 
+    'GAME OVER!', 
+    'THEY GOT YOU!', 
+    'NO ESCAPE!', 
+    'WRONG!', 
+    'YOU DIED!',
+    'DEATH CLAIMS YOU!',
+    'ETERNAL DAMNATION!'
+  ];
+  
+  let currentScreen = 'startScreen';
+  
+  // ============ NAVEGACIÓN ============
+  function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+    currentScreen = screenId;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  
+  function startGame() {
+    showScreen('room1');
+    playCreakSound();
+  }
+  
+  // ============ PREGUNTAS ============
+  function checkAnswer(room, answer) {
+    const feedback = document.getElementById('feedback' + room);
+    const hint = document.getElementById('hint' + room);
+    const nextBtn = document.getElementById('next' + room);
+    const options = document.querySelectorAll('#room' + room + ' .option');
+    
+    options.forEach(opt => opt.disabled = true);
+    
+    if (answer === correctAnswers[room]) {
+      feedback.className = 'feedback success';
+      feedback.innerHTML = explanations[room];
+      hint.classList.add('show');
+      nextBtn.style.display = 'block';
+      
+      options.forEach(opt => {
+        if (opt.textContent.includes(answer + '.')) {
+          opt.classList.add('correct');
+        }
+      });
+      
+      playSuccessSound();
+    } else {
+      feedback.className = 'feedback error';
+      feedback.innerHTML = '❌ WRONG...';
+      
+      options.forEach(opt => {
+        if (opt.textContent.includes(answer + '.')) {
+          opt.classList.add('wrong');
+        }
+      });
+      
+      triggerJumpScare();
+    }
+  }
+  
+  function triggerJumpScare() {
+    const overlay = document.getElementById('jumpscareOverlay');
+    const monster = document.getElementById('monsterEmoji');
+    const scareText = document.getElementById('scareText');
+    
+    monster.textContent = monsters[Math.floor(Math.random() * monsters.length)];
+    scareText.textContent = scareMessages[Math.floor(Math.random() * scareMessages.length)];
+    
+    overlay.classList.add('active');
+    document.body.classList.add('screen-shake');
+    playScreamSound();
+    
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      document.body.classList.remove('screen-shake');
+      restartGame();
+    }, 2800);
+  }
+  
+  // ============ TRANSICIÓN ============
+  function showTransition(nextScreen, text) {
+    const overlay = document.getElementById('transitionOverlay');
+    const transText = document.getElementById('transitionText');
+    transText.textContent = text;
+    
+    overlay.classList.remove('active');
+    void overlay.offsetWidth;
+    overlay.classList.add('active');
+    
+    playDoorSound();
+    
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      showScreen(nextScreen);
+    }, 2800);
+  }
+  
+  // ============ MINI JUEGOS ============
+  function startMinigame(num) {
+    showScreen('minigame' + num);
+    setTimeout(() => {
+      if (num === 1) initMaze();
+      else if (num === 2) initCables();
+      else if (num === 3) initDoors();
+      else if (num === 4) initMonsters();
+    }, 300);
+  }
+  
+  // ============ MINI JUEGO 1: LABERINTO ============
+  function initMaze() {
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+    const size = 400;
+    const cellSize = 40;
+    const cols = 10;
+    const rows = 10;
+    
+    const maze = [
+      [1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,1,0,0,0,0,1],
+      [1,0,1,0,1,0,1,1,0,1],
+      [1,0,1,0,0,0,0,1,0,1],
+      [1,0,1,1,1,1,0,1,0,1],
+      [1,0,0,0,0,1,0,0,0,1],
+      [1,1,1,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,0,1,0,1],
+      [1,0,1,1,1,1,0,0,0,1],
+      [1,1,1,1,1,1,1,1,1,1]
+    ];
+    
+    const start = { x: 1, y: 1 };
+    const end = { x: 8, y: 8 };
+    
+    let player = { x: start.x * cellSize + cellSize/2, y: start.y * cellSize + cellSize/2 };
+    let isDragging = false;
+    
+    function draw() {
+      ctx.clearRect(0, 0, size, size);
+      
+      // Fondo ultra oscuro
+      ctx.fillStyle = '#050000';
+      ctx.fillRect(0, 0, size, size);
+      
+      // Dibujar laberinto
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          if (maze[y][x] === 1) {
+            // Paredes más oscuras con textura
+            const gradient = ctx.createLinearGradient(
+              x * cellSize, y * cellSize,
+              (x + 1) * cellSize, (y + 1) * cellSize
+            );
+            gradient.addColorStop(0, '#1a0d00');
+            gradient.addColorStop(1, '#0a0500');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+            
+            ctx.strokeStyle = '#3a1f00';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+          } else {
+            // Caminos ligeramente más claros
+            ctx.fillStyle = '#0a0000';
+            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+      
+      // Salida con brillo rojo
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = '#8b0000';
+      ctx.fillStyle = '#8b0000';
+      ctx.font = '35px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🚪', end.x * cellSize + cellSize/2, end.y * cellSize + cellSize/2);
+      ctx.shadowBlur = 0;
+      
+      // Jugador con brillo
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = '#5a0000';
+      ctx.fillText('🏃', player.x, player.y);
+      ctx.shadowBlur = 0;
+    }
+    
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+    
+    function canMoveTo(x, y) {
+      const cellX = Math.floor(x / cellSize);
+      const cellY = Math.floor(y / cellSize);
+      if (cellX < 0 || cellX >= cols || cellY < 0 || cellY >= rows) return false;
+      return maze[cellY][cellX] === 0;
+    }
+    
+    function handleMove(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      
+      if (canMoveTo(pos.x, pos.y)) {
+        player.x = pos.x;
+        player.y = pos.y;
+        draw();
+        
+        const dist = Math.hypot(player.x - (end.x * cellSize + cellSize/2), player.y - (end.y * cellSize + cellSize/2));
+        if (dist < 25) {
+          isDragging = false;
+          playSuccessSound();
+          setTimeout(() => {
+            showTransition('room2', '🏃 Running through the darkness...');
+          }, 500);
+        }
+      }
+    }
+    
+    canvas.onmousedown = canvas.ontouchstart = (e) => {
+      isDragging = true;
+      handleMove(e);
+    };
+    canvas.onmousemove = canvas.ontouchmove = handleMove;
+    canvas.onmouseup = canvas.ontouchend = () => isDragging = false;
+    canvas.onmouseleave = () => isDragging = false;
+    
+    draw();
+  }
+  
+  // ============ MINI JUEGO 2: CABLES ============
+  function initCables() {
+    const container = document.getElementById('cablesGame');
+    container.innerHTML = '<svg id="cablesSvg"></svg>';
+    const svgEl = document.getElementById('cablesSvg');
+    
+    const colors = ['#8b0000', '#005500', '#00008b', '#8b8b00'];
+    const emojis = ['🔴', '🟢', '🔵', '🟡'];
+    const leftOrder = [0, 1, 2, 3];
+    const rightOrder = [2, 0, 3, 1];
+    
+    let selected = null;
+    let connected = 0;
+    const totalCables = 4;
+    
+    const points = [];
+    
+    leftOrder.forEach((colorIdx, i) => {
+      const point = document.createElement('div');
+      point.className = 'cable-point';
+      point.style.left = '20px';
+      point.style.top = (50 + i * 80) + 'px';
+      point.style.backgroundColor = colors[colorIdx];
+      point.style.color = colors[colorIdx];
+      point.textContent = emojis[colorIdx];
+      point.dataset.side = 'left';
+      point.dataset.colorIdx = colorIdx;
+      container.appendChild(point);
+      points.push(point);
+      
+      point.onclick = () => handlePointClick(point);
+    });
+    
+    rightOrder.forEach((colorIdx, i) => {
+      const point = document.createElement('div');
+      point.className = 'cable-point';
+      point.style.right = '20px';
+      point.style.top = (50 + i * 80) + 'px';
+      point.style.backgroundColor = colors[colorIdx];
+      point.style.color = colors[colorIdx];
+      point.textContent = emojis[colorIdx];
+      point.dataset.side = 'right';
+      point.dataset.colorIdx = colorIdx;
+      container.appendChild(point);
+      points.push(point);
+      
+      point.onclick = () => handlePointClick(point);
+    });
+    
+    function handlePointClick(point) {
+      if (point.classList.contains('connected')) return;
+      
+      if (!selected) {
+        selected = point;
+        point.classList.add('selected');
+        playTone(440, 0.1, 'sine', 0.1);
+      } else {
+        if (selected === point) {
+          selected.classList.remove('selected');
+          selected = null;
+          return;
+        }
+        
+        if (selected.dataset.side === point.dataset.side) {
+          selected.classList.remove('selected');
+          selected = point;
+          point.classList.add('selected');
+          return;
+        }
+        
+        if (selected.dataset.colorIdx === point.dataset.colorIdx) {
+          drawCable(selected, point, colors[selected.dataset.colorIdx]);
+          selected.classList.remove('selected');
+          selected.classList.add('connected');
+          point.classList.add('connected');
+          selected = null;
+          connected++;
+          playTone(660, 0.2, 'sine', 0.15);
+          
+          if (connected === totalCables) {
+            setTimeout(() => {
+              playSuccessSound();
+              showTransition('room3', '🏃 The wires connect... you move forward...');
+            }, 500);
+          }
+        } else {
+          drawCable(selected, point, '#3a0000');
+          playErrorSound();
+          const wrongLine = svgEl.lastChild;
+          setTimeout(() => {
+            wrongLine.remove();
+          }, 800);
+          selected.classList.remove('selected');
+          selected = null;
+        }
+      }
+    }
+    
+    function drawCable(p1, p2, color) {
+      const rect1 = p1.getBoundingClientRect();
+      const rect2 = p2.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      
+      const x1 = rect1.left + rect1.width/2 - containerRect.left;
+      const y1 = rect1.top + rect1.height/2 - containerRect.top;
+      const x2 = rect2.left + rect2.width/2 - containerRect.left;
+      const y2 = rect2.top + rect2.height/2 - containerRect.top;
+      
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', x1);
+      line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2);
+      line.setAttribute('y2', y2);
+      line.setAttribute('stroke', color);
+      line.setAttribute('stroke-width', '6');
+      line.setAttribute('stroke-linecap', 'round');
+      line.style.filter = 'drop-shadow(0 0 8px ' + color + ')';
+      svgEl.appendChild(line);
+    }
+  }
+  
+  // ============ MINI JUEGO 3: PUERTAS ============
+  function initDoors() {
+    const container = document.getElementById('doorsContainer');
+    container.innerHTML = '';
+    
+    const decorations = ['💀', '👻', '🕷️', '☠️', '🦇'];
+    const correctDoor = Math.floor(Math.random() * 5);
+    
+    decorations.forEach((deco, i) => {
+      const door = document.createElement('div');
+      door.className = 'door';
+      door.innerHTML = deco;
+      
+      if (i === correctDoor) {
+        door.style.boxShadow = '0 10px 25px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.8), 0 0 25px rgba(139, 0, 0, 0.4)';
+        door.dataset.correct = 'true';
+      }
+      
+      door.onclick = () => handleDoorClick(door, i === correctDoor);
+      container.appendChild(door);
+    });
+  }
+  
+  function handleDoorClick(door, isCorrect) {
+    if (isCorrect) {
+      door.classList.add('correct-door');
+      playSuccessSound();
+      setTimeout(() => {
+        showTransition('room4', '🏃 The door opens... you run...');
+      }, 1000);
+    } else {
+      door.classList.add('wrong-door');
+      playErrorSound();
+      const overlay = document.getElementById('jumpscareOverlay');
+      const monster = document.getElementById('monsterEmoji');
+      const scareText = document.getElementById('scareText');
+      monster.textContent = '👻';
+      scareText.textContent = 'WRONG DOOR!';
+      overlay.classList.add('active');
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        door.classList.remove('wrong-door');
+      }, 1500);
+    }
+  }
+  
+  // ============ MINI JUEGO 4: MONSTRUOS ============
+  function initMonsters() {
+    const container = document.getElementById('monstersGame');
+    container.innerHTML = '<div class="monster-counter">Souls Remaining: <span id="monsterCount">0</span></div>';
+    document.getElementById('escapeBtn').style.display = 'none';
+    
+    const monsterTypes = ['👹', '👺', '👻', '🧟', '🧛', '💀', '☠️', '👿'];
+    const totalMonsters = 12;
+    let monstersLeft = totalMonsters;
+    
+    document.getElementById('monsterCount').textContent = monstersLeft;
+    
+    for (let i = 0; i < totalMonsters; i++) {
+      const monster = document.createElement('div');
+      monster.className = 'monster-target';
+      monster.textContent = monsterTypes[Math.floor(Math.random() * monsterTypes.length)];
+      
+      const x = Math.random() * 85 + 5;
+      const y = Math.random() * 80 + 10;
+      monster.style.left = x + '%';
+      monster.style.top = y + '%';
+      monster.style.animationDelay = (Math.random() * 2) + 's';
+      
+      monster.onclick = () => {
+        if (monster.classList.contains('destroyed')) return;
+        monster.classList.add('destroyed');
+        playTone(200 + Math.random() * 300, 0.2, 'sawtooth', 0.15);
+        monstersLeft--;
+        document.getElementById('monsterCount').textContent = monstersLeft;
+        
+        if (monstersLeft === 0) {
+          setTimeout(() => {
+            playSuccessSound();
+            document.getElementById('escapeBtn').style.display = 'block';
+          }, 600);
+        }
+      };
+      
+      container.appendChild(monster);
+    }
+  }
+  
+  // ============ VICTORIA ============
+  function showVictory() {
+    showTransition('victoryScreen', '🏆 YOU ARE FREE...');
+    setTimeout(() => {
+      playVictorySound();
+    }, 2800);
+  }
+  
+  // ============ REINICIAR ============
+  function restartGame() {
+    for (let i = 1; i <= 4; i++) {
+      const feedback = document.getElementById('feedback' + i);
+      const hint = document.getElementById('hint' + i);
+      const nextBtn = document.getElementById('next' + i);
+      const options = document.querySelectorAll('#room' + i + ' .option');
+      
+      feedback.className = 'feedback';
+      feedback.style.display = 'none';
+      hint.classList.remove('show');
+      nextBtn.style.display = 'none';
+      
+      options.forEach(opt => {
+        opt.disabled = false;
+        opt.classList.remove('correct', 'wrong');
+      });
+    }
+    
+    showScreen('startScreen');
+  }
+  
+  // ============ SONIDOS ============
+  let audioCtx;
+  function getAudioContext() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+  
+  function playTone(freq, duration, type = 'sine', volume = 0.1) {
+    try {
+      const ctx = getAudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration);
+    } catch(e) {}
+  }
+  
+  function playSuccessSound() {
+    playTone(523, 0.2, 'sine', 0.15);
+    setTimeout(() => playTone(659, 0.2, 'sine', 0.15), 150);
+    setTimeout(() => playTone(784, 0.3, 'sine', 0.15), 300);
+  }
+  
+  function playErrorSound() {
+    playTone(150, 0.3, 'sawtooth', 0.2);
+    setTimeout(() => playTone(100, 0.4, 'sawtooth', 0.2), 200);
+  }
+  
+  function playScreamSound() {
+    const ctx = getAudioContext();
+    const bufferSize = ctx.sampleRate * 0.6;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.35, ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 900;
+    filter.Q.value = 3;
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noise.start();
+    playTone(120, 0.6, 'sawtooth', 0.3);
+    setTimeout(() => playTone(70, 0.6, 'sawtooth', 0.35), 100);
+    setTimeout(() => playTone(40, 0.7, 'sawtooth', 0.4), 200);
+  }
+  
+  function playDoorSound() {
+    playTone(180, 0.6, 'triangle', 0.1);
+  }
+  
+  function playCreakSound() {
+    playTone(70, 1, 'sawtooth', 0.08);
+  }
+  
+  function playVictorySound() {
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((n, i) => {
+      setTimeout(() => playTone(n, 0.3, 'sine', 0.15), i * 200);
+    });
+  }
+  
+  // Parpadeo más frecuente e intenso
+  setInterval(() => {
+    if (Math.random() > 0.92) {
+      document.body.style.filter = 'brightness(0.2) contrast(1.5)';
+      setTimeout(() => {
+        document.body.style.filter = 'brightness(1) contrast(1)';
+      }, 150);
+    }
+  }, 2500);
+</script>
+
+</body>
+</html>
